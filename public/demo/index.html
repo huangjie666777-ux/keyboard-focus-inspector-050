@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>键盘焦点巡检 - 动态示例页</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 24px;
+        line-height: 1.6;
+        color: #1f2937;
+      }
+      section {
+        margin: 28px 0;
+        padding: 16px 20px;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+      }
+      h2 { margin-top: 0; font-size: 16px; }
+      .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 10px 0; }
+      button, a.button {
+        padding: 7px 14px;
+        border-radius: 6px;
+        border: 1px solid #2563eb;
+        background: #2563eb;
+        color: #fff;
+        font-size: 14px;
+        cursor: pointer;
+        text-decoration: none;
+      }
+      .secondary { background: #fff; color: #2563eb; }
+      input[type='text'], input[type='email'] {
+        padding: 6px 10px;
+        border: 1px solid #9ca3af;
+        border-radius: 6px;
+      }
+      .hidden-region { padding: 12px; border: 1px dashed #b91c1c; border-radius: 8px; }
+      #mover {
+        display: inline-block;
+        padding: 8px 16px;
+        background: #7c3aed;
+        color: #fff;
+        border-radius: 6px;
+        transition: margin 0.25s ease;
+      }
+      code { background: #f3f4f6; padding: 1px 5px; border-radius: 4px; }
+    </style>
+  </head>
+  <body>
+    <h1>键盘焦点巡检 · 动态示例页</h1>
+    <p>点击扩展图标 → <strong>开始</strong>，然后用 Tab / Shift+Tab、鼠标依次访问下方控件，观察焦点来源、名称与问题标记。</p>
+
+    <section>
+      <h2>1. 常规命名控件</h2>
+      <div class="row">
+        <button type="button">普通按钮（元素文本）</button>
+        <button type="button" aria-label="关闭对话框">&times;</button>
+        <span id="desc">引用文本命名的搜索框</span>
+        <input type="text" aria-labelledby="desc" placeholder="输入关键词" />
+      </div>
+      <div class="row">
+        <label for="email">邮箱地址（关联 label）</label>
+        <input id="email" type="email" />
+      </div>
+    </section>
+
+    <section>
+      <h2>2. 常见问题</h2>
+      <div class="row">
+        <button type="button" tabindex="5">正 tabindex 按钮</button>
+        <a href="#" class="button"></a>
+        <button type="button" class="secondary"><img alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" /></button>
+      </div>
+      <p>上面依次演示：正 <code>tabindex</code>、无名称链接、无名称按钮。</p>
+      <div class="hidden-region" aria-hidden="true">
+        <strong>aria-hidden 容器：</strong>
+        <button type="button" class="secondary">隐藏区域里的按钮</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>3. 动态节点（删除 / 插回）</h2>
+      <div class="row">
+        <button type="button" id="toggle-btn" class="secondary">删除目标按钮</button>
+        <button type="button" id="target-btn">巡检后点历史项定位我</button>
+      </div>
+      <p>先让“目标按钮”获得焦点，再在历史中点击它描边定位；然后删除、插回，验证同一节点身份保持。</p>
+    </section>
+
+    <section>
+      <h2>4. 布局跟随</h2>
+      <div class="row">
+        <button type="button" id="pad-btn" class="secondary">增减间距</button>
+        <span id="mover" tabindex="0">描边会跟随我移动</span>
+      </div>
+      <p>选中节点后滚动或缩放页面，描边应持续跟随。</p>
+      <div style="height: 60px"></div>
+      <button type="button" class="secondary">页面底部按钮（滚动测试）</button>
+      <div style="height: 400px"></div>
+    </section>
+
+    <script>
+      const toggleBtn = document.getElementById('toggle-btn');
+      const targetBtn = document.getElementById('target-btn');
+      let detached = null;
+      toggleBtn.addEventListener('click', () => {
+        if (detached) {
+          toggleBtn.after(detached);
+          detached = null;
+          toggleBtn.textContent = '删除目标按钮';
+        } else {
+          detached = targetBtn;
+          targetBtn.remove();
+          toggleBtn.textContent = '插回同一目标按钮';
+        }
+      });
+
+      const padBtn = document.getElementById('pad-btn');
+      const mover = document.getElementById('mover');
+      let padded = false;
+      padBtn.addEventListener('click', () => {
+        padded = !padded;
+        mover.style.marginLeft = padded ? '220px' : '0';
+        mover.style.marginTop = padded ? '30px' : '0';
+      });
+    </script>
+  </body>
+</html>
